@@ -88,10 +88,10 @@ class ImageService extends AbstractService {
         $img = new Imagick($this->basePath . '/' . $id);
         $thumb = clone $img;
 
-        $thumb->cropThumbnailimage(200, 200);
+        $thumb->cropThumbnailimage(50, 50);
         $thumb->setImageCompression(self::COMPRESSION_TYPE);
-        $thumb->setImageCompressionQuality(31);
-        $thumb->writeImage($this->basePath . '/' . $id . '-thumb');
+        $thumb->setImageCompressionQuality(81);
+        $thumb->writeImage($this->basePath . '/' . $id . '-comment');
     }
 
     public function getImageResponse($id, $version = null) {
