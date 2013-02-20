@@ -12,9 +12,9 @@ use Doctrine\DBAL\Query\QueryBuilder;
 class CompanyService extends AbstractService
 {
 
-    public function __construct(Connection $conn, Memcached $mem)
+    public function __construct(Connection $conn)
     {
-        parent::__construct($conn, 'company', $mem);
+        parent::__construct($conn, 'company');
     }
 
     public function findByName($name)

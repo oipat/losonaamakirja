@@ -80,7 +80,7 @@ class Person extends Entity
     /**
      * @param array $friends
      */
-    public function setFriends($friends)
+    public function setFriends(array $friends)
     {
         $this->friends = $friends;
     }
