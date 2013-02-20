@@ -8,18 +8,15 @@ use ImagickPixel;
 use Symfony\Component\HttpFoundation\Response;
 use Losofacebook\Image;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Memcached;
 
 /**
  * Image service
  */
-class ImageService {
+class ImageService extends AbstractService {
 
     const COMPRESSION_TYPE = Imagick::COMPRESSION_JPEG;
 
-    /**
-     * @var Connection
-     */
-    private $conn;
 
     /**
      * @param $basePath
