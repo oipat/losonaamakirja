@@ -1,6 +1,7 @@
 <?php
 
 namespace Losofacebook\Service;
+
 use Doctrine\DBAL\Connection;
 use Imagick;
 use ImagickPixel;
@@ -11,8 +12,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 /**
  * Image service
  */
-class ImageService
-{
+class ImageService {
+
     const COMPRESSION_TYPE = Imagick::COMPRESSION_JPEG;
 
     /**
@@ -20,14 +21,11 @@ class ImageService
      */
     private $conn;
 
-
-
     /**
      * @param $basePath
      */
-    public function __construct(Connection $conn, $basePath)
-    {
-        $this->conn = $conn;
+    public function __construct(Connection $conn, $basePath, Memcached $memC) {
+        parent::__construct($conn, 'image', $memC);
         $this->basePath = $basePath;
     }
 
@@ -38,14 +36,12 @@ class ImageService
      * @param int $type
      * @return integer
      */
-    public function createImage($path, $type)
-    {
+    public function createImage($path, $type) {
         $this->conn->insert(
-            'image',
-            [
-                'upload_path' => $path,
-                'type' => $type
-            ]
+                'image', [
+            'upload_path' => $path,
+            'type' => $type
+                ]
         );
         $id = $this->conn->lastInsertId();
 
@@ -68,9 +64,7 @@ class ImageService
         return $id;
     }
 
-
-    public function createCorporateVersions($id)
-    {
+    public function createCorporateVersions($id) {
         $img = new Imagick($this->basePath . '/' . $id);
         $img->thumbnailimage(450, 450, true);
 
@@ -91,9 +85,7 @@ class ImageService
         $thumb->writeImage($this->basePath . '/' . $id . '-thumb');
     }
 
-
-    public function createVersions($id)
-    {
+    public function createVersions($id) {
         $img = new Imagick($this->basePath . '/' . $id);
         $thumb = clone $img;
 
@@ -103,8 +95,7 @@ class ImageService
         $thumb->writeImage($this->basePath . '/' . $id . '-thumb');
     }
 
-    public function getImageResponse($id, $version = null)
-    {
+    public function getImageResponse($id, $version = null) {
         $path = $this->basePath . '/' . $id;
 
         if ($version) {
@@ -120,6 +111,5 @@ class ImageService
         $response->headers->set('Content-type', 'image/jpeg');
         return $response;
     }
-
 
 }
