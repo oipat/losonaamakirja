@@ -61,6 +61,7 @@ class ImageService extends AbstractService {
         return $id;
     }
 
+    // ei tartte koskea
     public function createCorporateVersions($id) {
         $img = new Imagick($this->basePath . '/' . $id);
         $img->thumbnailimage(450, 450, true);
@@ -82,13 +83,14 @@ class ImageService extends AbstractService {
         $thumb->writeImage($this->basePath . '/' . $id . '-thumb');
     }
 
+    // hyvä pohja
     public function createVersions($id) {
         $img = new Imagick($this->basePath . '/' . $id);
         $thumb = clone $img;
 
-        $thumb->cropThumbnailimage(500, 500);
+        $thumb->cropThumbnailimage(200, 200);
         $thumb->setImageCompression(self::COMPRESSION_TYPE);
-        $thumb->setImageCompressionQuality(90);
+        $thumb->setImageCompressionQuality(31);
         $thumb->writeImage($this->basePath . '/' . $id . '-thumb');
     }
 

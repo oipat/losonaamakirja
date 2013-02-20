@@ -6,6 +6,7 @@ use Knp\Console\ConsoleEvent;
 
 use Losofacebook\Command\CreateRandomUsersCommand;
 use Losofacebook\Command\CreateImagesCommand;
+use Losofacebook\Command\ReCreateImagesCommand;
 use Losofacebook\Command\AssociateImagesCommand;
 use Losofacebook\Command\CreateFriendshipCommand;
 use Losofacebook\Command\CreatePostCommand;
@@ -19,6 +20,7 @@ $app['dispatcher']->addListener(ConsoleEvents::INIT, function(ConsoleEvent $even
     $app = $event->getApplication();
     $app->add(new CreateRandomUsersCommand());
     $app->add(new CreateImagesCommand());
+    $app->add(new ReCreateImagesCommand());
     $app->add(new AssociateImagesCommand());
     $app->add(new CreateFriendshipCommand());
     $app->add(new CreatePostCommand());
