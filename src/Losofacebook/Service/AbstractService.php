@@ -5,20 +5,19 @@ namespace Losofacebook\Service;
 use Doctrine\DBAL\Connection;
 use ArrayIterator;
 
-abstract class AbstractService
-{
+abstract class AbstractService {
 
     /**
      * @var Connection
      */
     protected $conn;
-
+    protected $memcached;
     private $tableName;
 
-    public function __construct(Connection $conn, $tableName)
-    {
+    public function __construct(Connection $conn, $tableName, Memcached $memcached) {
         $this->conn = $conn;
         $this->tableName = $tableName;
+        $this->memcached = $memcached;
     }
 
     /**
@@ -39,9 +38,8 @@ abstract class AbstractService
                 }
 
                 $qb->andWhere(
-                    $qb->expr()->comparison($key, 'IN', '('. implode(', ', $value) . ')')
+                        $qb->expr()->comparison($key, 'IN', '(' . implode(', ', $value) . ')')
                 );
-
             } else {
                 $qb->andWhere("{$key} = " . $qb->expr()->literal($value));
             }
@@ -64,26 +62,32 @@ abstract class AbstractService
                 } else {
                     $qb->orderBy($ob[0]);
                 }
-
             }
         }
 
         if (isset($options['page'])) {
-            $qb->setFirstResult(($options['page'] -1) * $options['limit']);
+            $qb->setFirstResult(($options['page'] - 1) * $options['limit']);
             $qb->setMaxResults($options['limit']);
         }
 
         $raw = array_map(
-            function($data) use ($callback) {
-                return $callback($data);
-            },
-            $this->conn->fetchAll($qb)
+                function($data) use ($callback) {
+                    return $callback($data);
+                }, $this->conn->fetchAll($qb)
         );
 
         return new ArrayIterator($raw);
-
     }
 
+    protected function tryCache($cacheId, callable $callback, $lifetime = null) {
+        if ($ret = $this->memcached->get($cacheId)) {
+            return $ret;
+        }
 
+        $ret = $callback();
+
+        $this->memcached->set($cacheId, $ret, $lifetime);
+        return $ret;
+    }
 
 }

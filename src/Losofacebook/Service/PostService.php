@@ -1,6 +1,7 @@
 <?php
 
 namespace Losofacebook\Service;
+
 use Doctrine\DBAL\Connection;
 use Losofacebook\Post;
 use Losofacebook\Comment;
@@ -10,8 +11,8 @@ use DateTime;
 /**
  * Image service
  */
-class PostService
-{
+class PostService {
+
     /**
      * @var Connection
      */
@@ -25,8 +26,7 @@ class PostService
     /**
      * @param $basePath
      */
-    public function __construct(Connection $conn, PersonService $personService)
-    {
+    public function __construct(Connection $conn, PersonService $personService) {
         $this->conn = $conn;
         $this->personService = $personService;
     }
@@ -36,8 +36,7 @@ class PostService
      * @param \stdClass $data
      * @return Post
      */
-    public function create($personId, $data)
-    {
+    public function create($personId, $data) {
         $data = [
             'person_id' => $personId,
             'poster_id' => $data->poster->id,
@@ -58,16 +57,15 @@ class PostService
      * @param \stdClass $data
      * @return Comment
      */
-    public function createComment($postId, $data)
-    {
+    public function createComment($postId, $data) {
         try {
 
-        $data = [
-            'post_id' => $postId,
-            'poster_id' => $data->poster->id,
-            'date_created' => (new DateTime())->format('Y-m-d H:i:s'),
-            'content' => $data->content,
-        ];
+            $data = [
+                'post_id' => $postId,
+                'poster_id' => $data->poster->id,
+                'date_created' => (new DateTime())->format('Y-m-d H:i:s'),
+                'content' => $data->content,
+            ];
             $this->conn->insert('comment', $data);
 
             $data['id'] = $this->conn->lastInsertId();
@@ -75,30 +73,24 @@ class PostService
             $comment = Comment::create($data);
             $comment->setPoster($this->personService->findById($data['poster_id'], false));
             return $comment;
-
         } catch (\Exception $e) {
             echo $e;
             die();
         }
-
     }
-
 
     /**
      * Finds by person id
      *
      * @param $path
      */
-    public function findByPersonId($personId)
-    {
+    public function findByPersonId($personId) {
         $data = $this->conn->fetchAll(
-            "SELECT * FROM post WHERE person_id = ? ORDER BY date_created DESC", [$personId]
+                "SELECT * FROM post WHERE person_id = ? ORDER BY date_created DESC", [$personId]
         );
 
         $posts = [];
         foreach ($data as $row) {
-
-
             $post = Post::create($row);
             $post->setPerson($this->personService->findById($row['poster_id'], false));
             $post->setComments($this->getComments($row['id']));
@@ -109,8 +101,7 @@ class PostService
         return $posts;
     }
 
-    public function findFriends($id)
-    {
+    public function findFriends($id) {
         $friends = [];
         foreach ($this->findFriendIds($id) as $friendId) {
             $friends[] = $this->findById($friendId, false);
@@ -118,37 +109,31 @@ class PostService
         return $friends;
     }
 
-
-    public function findFriendIds($id)
-    {
+    public function findFriendIds($id) {
         $myAdded = $this->conn->fetchAll(
-            "SELECT target_id FROM friendship WHERE source_id = ?",
-            [$id]
+                "SELECT target_id FROM friendship WHERE source_id = ?", [$id]
         );
 
         $meAdded = $this->conn->fetchAll(
-            "SELECT source_id FROM friendship WHERE target_id = ?",
-            [$id]
+                "SELECT source_id FROM friendship WHERE target_id = ?", [$id]
         );
 
         $myAdded = array_reduce($myAdded, function ($result, $row) {
-            $result[] = $row['target_id'];
-            return $result;
-        }, []);
+                    $result[] = $row['target_id'];
+                    return $result;
+                }, []);
 
         $meAdded = array_reduce($meAdded, function ($result, $row) {
-            $result[] = $row['source_id'];
-            return $result;
-        }, []);
+                    $result[] = $row['source_id'];
+                    return $result;
+                }, []);
 
         return array_unique(array_merge($myAdded, $meAdded));
     }
 
-
-    public function getComments($postId)
-    {
+    public function getComments($postId) {
         $data = $this->conn->fetchAll(
-            "SELECT * FROM comment WHERE post_id = ? ORDER BY date_created DESC", [$postId]
+                "SELECT * FROM comment WHERE post_id = ? ORDER BY date_created DESC", [$postId]
         );
 
         $comments = [];
@@ -159,4 +144,5 @@ class PostService
         }
         return $comments;
     }
+
 }
