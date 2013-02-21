@@ -32,7 +32,16 @@ class ReCreateImagesCommand extends Command
         $images = $this->getDb()->fetchAll("SELECT * FROM image WHERE type = 1");
         
         foreach ($images as $image) {
-            $is->createVersions($image['id']);
+            $is->createVersions($image['id'],  75, 75, 84, '-wallpost');
+            $is->createVersions($image['id'],  50, 50, 84, '-comment');
+            $is->createVersions($image['id'],  260, 260, 84, '-thumb');
+            $output->writeln("Recreating image id: {$image['id']}");
+        }
+        
+        $images = $this->getDb()->fetchAll("SELECT * FROM image WHERE type = 2");
+        
+        foreach ($images as $image) {
+            $is->createVersions($image['id'],  153, 153, 84, '-thumb');
             $output->writeln("Recreating image id: {$image['id']}");
         }
         

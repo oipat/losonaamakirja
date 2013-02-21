@@ -84,14 +84,16 @@ class ImageService extends AbstractService {
     }
 
     // hyvä pohja
-    public function createVersions($id) {
+    public function createVersions($id, $x, $y, $quality, $postfix) {
         $img = new Imagick($this->basePath . '/' . $id);
         $thumb = clone $img;
 
-        $thumb->cropThumbnailimage(50, 50);
+        $thumb->stripimage();
+        $thumb->cropThumbnailimage($x, $y);
         $thumb->setImageCompression(self::COMPRESSION_TYPE);
-        $thumb->setImageCompressionQuality(81);
-        $thumb->writeImage($this->basePath . '/' . $id . '-comment');
+        $thumb->setimageinterlacescheme(Imagick::INTERLACE_PLANE);
+        $thumb->setImageCompressionQuality($quality);
+        $thumb->writeImage($this->basePath . '/' . $id . $postfix);
     }
 
     public function getImageResponse($id, $version = null) {
