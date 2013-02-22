@@ -42,6 +42,7 @@ class ReCreateImagesCommand extends Command
         
         foreach ($images as $image) {
             $is->createVersions($image['id'],  153, 153, 84, '-thumb');
+            $is->createVersions($image['id'],  360, 360, 84, '-bigthumb');
             $output->writeln("Recreating image id: {$image['id']}");
         }
         

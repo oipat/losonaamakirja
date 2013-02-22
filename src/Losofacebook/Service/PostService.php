@@ -98,7 +98,6 @@ class PostService
         $posts = [];
         foreach ($data as $row) {
 
-
             $post = Post::create($row);
             $post->setPerson($this->personService->findById($row['poster_id'], false));
             $post->setComments($this->getComments($row['id']));
@@ -111,37 +110,42 @@ class PostService
 
     public function findFriends($id)
     {
-        $friends = [];
-        foreach ($this->findFriendIds($id) as $friendId) {
-            $friends[] = $this->findById($friendId, false);
-        }
-        return $friends;
+//        $friends = [];
+//        foreach ($this->findFriendIds($id) as $friendId) {
+//            $friends[] = $this->findById($friendId, false);
+//        }
+//        return $friends;
+        
+        
+          return $this->personService->findFriends($id);
     }
 
 
     public function findFriendIds($id)
     {
-        $myAdded = $this->conn->fetchAll(
-            "SELECT target_id FROM friendship WHERE source_id = ?",
-            [$id]
-        );
-
-        $meAdded = $this->conn->fetchAll(
-            "SELECT source_id FROM friendship WHERE target_id = ?",
-            [$id]
-        );
-
-        $myAdded = array_reduce($myAdded, function ($result, $row) {
-            $result[] = $row['target_id'];
-            return $result;
-        }, []);
-
-        $meAdded = array_reduce($meAdded, function ($result, $row) {
-            $result[] = $row['source_id'];
-            return $result;
-        }, []);
-
-        return array_unique(array_merge($myAdded, $meAdded));
+//        $myAdded = $this->conn->fetchAll(
+//            "SELECT target_id FROM friendship WHERE source_id = ?",
+//            [$id]
+//        );
+//
+//        $meAdded = $this->conn->fetchAll(
+//            "SELECT source_id FROM friendship WHERE target_id = ?",
+//            [$id]
+//        );
+//
+//        $myAdded = array_reduce($myAdded, function ($result, $row) {
+//            $result[] = $row['target_id'];
+//            return $result;
+//        }, []);
+//
+//        $meAdded = array_reduce($meAdded, function ($result, $row) {
+//            $result[] = $row['source_id'];
+//            return $result;
+//        }, []);
+//        return array_unique(array_merge($myAdded, $meAdded));
+        
+        
+        return $this->personService->findFriendIds($id);
     }
 
 
